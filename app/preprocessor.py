@@ -5,7 +5,7 @@ import re
 
 def preprocess_chat_data(data):
     # pattern format
-    pattern = '\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s-\s'
+    pattern = r'\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s-\s'
 
     messages = re.split(pattern, data)[1:]
     dates = re.findall(pattern,data)
@@ -18,17 +18,21 @@ def preprocess_chat_data(data):
     users = []
     messages = []
     for message in df['user_message']:
-        entry = re.split('([\w\W]+?):\s',message)
-        if entry[1:]:  # user name
-            users.append(entry[1])
-            messages.append(entry[2])
+        msg = str(message).strip()
+        if not msg:
+            users.append("group_notification")
+            messages.append('')
+            continue
+        if ':' in msg:
+            user_part,msg_part = msg.split(':',1)
+            users.append(user_part.strip())
+            messages.append(msg_part.strip())
         else:
-            users.append('group_notification')
-            messages.append(entry[0])
-    df['user'] = users
+            users.append("group notification")
+            messages.append(msg.strip())
+    df['user'] = users        
     df['message'] = messages
-    df.drop(columns=['message'], inplace=True)
-    df.head(20)   
+    df.drop(columns=['user_message'], inplace=True)  
 
     # extracting the dates from the chat data
     df['year'] = df['message_date'].dt.year
