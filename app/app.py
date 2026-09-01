@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import re # which gives you access to regex functions
+import re # it gives access to regex functions
 import preprocessor as p
 import helper
 
@@ -25,8 +25,19 @@ if uploaded_file is not None:
     selected_user = st.sidebar.selectbox("Select user",user_list)
 
     if st.sidebar.button("show Analysis"):
-        num_messages = helper.fetch_stats(selected_user,df)
-        col1,col2,col3,col3 = st.columns(4) # split the page into 4 columns
-        with col1:
-            st.header("Total Meessages")
-            st.title(num_messages)
+        st.write(f"Analysis of {selected_user} is shown below ")
+        try:
+            num_messages,words,media_messages = helper.fetch_stats(selected_user,df)
+            col1,col2,col3,col4 = st.columns(4) # split the page into 4 columns
+            with col1:
+                st.header("Total Meessages")
+                st.title(num_messages)
+            with col2:
+                st.header("total words")
+                st.title(words)
+            with col3:
+                st.header("Media Messages")
+                st.title(media_messages)
+        except Exception as e:
+            st.error(f"error : {e}")
+            st.stop()
