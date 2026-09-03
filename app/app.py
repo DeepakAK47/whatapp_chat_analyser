@@ -4,6 +4,7 @@ import numpy as np
 import re # it gives access to regex functions
 import preprocessor as p
 import helper
+import matplotlib.pyplot as plt
 
 st.sidebar.title("WhatsApp Chat Analyser")
 
@@ -26,9 +27,11 @@ if uploaded_file is not None:
 
     if st.sidebar.button("show Analysis"):
         st.write(f"Analysis of {selected_user} is shown below ")
+
+        # stat Area
         try:
             num_messages,words,media_messages = helper.fetch_stats(selected_user,df)
-            col1,col2,col3,col4 = st.columns(4) # split the page into 4 columns
+            col1,col2,col3 = st.columns([3,3,3]) # split the page into 3 columns
             with col1:
                 st.header("Total Meessages")
                 st.title(num_messages)
@@ -37,7 +40,40 @@ if uploaded_file is not None:
                 st.title(words)
             with col3:
                 st.header("Media Messages")
-                st.title(media_messages)
+                st.title(media_messages)   
         except Exception as e:
             st.error(f"error : {e}")
             st.stop()
+
+
+        # finding the bussiest user in the group (if selected user is overall)
+        if selected_user == 'Overall':
+            try:
+                x,new_df = helper.most_busy_users(df)
+                st.title("Most Busy Users")
+                col1,col2 = st.columns([3,3])
+                with col1:
+                    st.dataframe(x,use_container_width=True)
+                with col2:
+                    st.dataframe(new_df,use_container_width=True)
+            except Exception as e:
+                st.error(f"error : {e}")
+                st.stop()
+
+        # wordcloud generation
+        st.title("Wordcloud")
+        df_wc = helper.create_wordcloud(selected_user,df)
+        fig,ax = plt.subplots()
+        ax.imshow(df_wc)
+        st.pyplot(fig)
+
+        # most common words
+        most_common_df = helper.most_common_words(selected_user,df)
+
+        fig,ax = plt.subplots()
+
+        ax.barh(most_common_df[0],most_common_df[1])
+        plt.xticks(rotation='vertical')
+
+        st.title('Most commmon words')
+        st.pyplot(fig)      
