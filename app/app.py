@@ -5,6 +5,7 @@ import re # it gives access to regex functions
 import preprocessor as p
 import helper
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 st.sidebar.title("WhatsApp Chat Analyser")
 
@@ -67,13 +68,9 @@ if uploaded_file is not None:
         ax.imshow(df_wc)
         st.pyplot(fig)
 
-        # most common words
-        most_common_df = helper.most_common_words(selected_user,df)
-
-        fig,ax = plt.subplots()
-
-        ax.barh(most_common_df[0],most_common_df[1])
+        # bar graph for month vs number of messages
+        st.title("Monthly Timeline")
+        plt.figure(figsize=(10, 6))
+        sns.countplot(x='month_num', data=df, order=df['month_num'].value_counts().index)
         plt.xticks(rotation='vertical')
-
-        st.title('Most commmon words')
-        st.pyplot(fig)      
+        st.pyplot(plt)

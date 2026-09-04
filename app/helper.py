@@ -1,3 +1,5 @@
+from turtle import pd
+
 from wordcloud import WordCloud
 
 def fetch_stats(selected_user,df):
@@ -36,7 +38,7 @@ def most_busy_users(df):
     
     # Percentage contribution of each user
     user_percentages = round((df['user'].value_counts() / df.shape[0]) * 100, 2).reset_index()
-    user_percentages.columns = ['S.No', 'name', 'percentage']  # Proper naming
+    user_percentages.columns = ['name', 'percentage']  # Proper naming
     
     return top_users, user_percentages 
 
@@ -49,3 +51,5 @@ def create_wordcloud(selected_user, df):
     
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
     return wordcloud
+
+# most common words
